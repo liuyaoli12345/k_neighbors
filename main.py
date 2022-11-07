@@ -1,5 +1,43 @@
 import numpy as np
 import operator
+from os import listdir
+
+def handwritingClassTest():
+    hwlabels = []
+    trainingFileList = listdir('digits/trainingDigits')
+    m = len(trainingFileList)
+    trainingMat =np.zeros((m,1024))
+
+    for i in range(m):
+        fileNameStr = trainingFileList[i]
+        fileStr = fileNameStr.split('.')[0]
+        classNumStr = int(fileStr.split('_')[0])
+        hwlabels.append(classNumStr)
+
+        trainingMat[i,:] = img2vector('digits/trainingDigits/%s'%fileNameStr)
+        testFileList = listdir('digits/testDigits')
+        errorCount = 0.0
+        mTest = len(testFileList)
+
+        for i in range(mTest):
+            fileNameStr = testFileList[i]
+            fileStr = fileNameStr.split('.')[0]
+            classNumStr = int(fileStr.split('_')[0])
+
+
+        vectorUndertest = img2vector('digits/testDigits/%s'%fileNameStr)
+
+        classifierResult = classify0(vectorUndertest, trainingMat, hwlabels, 3)
+        
+        print("测试样本 %d, 分类器预测: %d, 真实类别: %d"%(i+1, classifierResult, classNumStr))
+
+        if (classifierResult!=classNumStr):
+            errorCount += 1.0
+
+        print("\n错误分类计数:%d"%errorCount)
+        print("\n错误分类比例:%d"%(errorCount/float(mTest)))
+
+
 
 def classify0(inX, dataSet, labels, k):
     dataSetSize = dataSet.shape[0]
@@ -39,3 +77,5 @@ if __name__ == '__main__':
     #test img2vector
     img2vector('digits/testDigits/0_1.txt')
     print(classify0([0,0],group,labels,3))
+    handwritingClassTest()
+
